@@ -2,7 +2,7 @@
 ### 👋 About Me<br><br>- 🔭 I'm currently working on **building full-stack tools like Text-to-SQL engines and remote desktop apps**<br>- 🌱 I'm currently learning **Integrated M.Sc. in Theoretical Computer Science at PSG College of Technology**<br>- 👯 I'm looking to collaborate on **open-source projects and interesting side builds**<br>- 🤝 I'm looking for help with **scaling projects and improving developer workflows**<br>- 💬 Ask me about **web development, databases, or automation**<br>- ⚡ Fun fact: **I enjoy turning small ideas into working prototypes**
 
 ## 📊 GitHub Stats & 🧩 LeetCode Stats
-![](https://streak-stats.demolab.com/?user=Kavinraj-SK&theme=aura&hide_border=false)<br/>
+
 ![](https://github-readme-stats.shion.dev/api/top-langs/?username=Kavinraj-SK&theme=aura&hide_border=false&include_all_commits=true&count_private=true&layout=compact)<br/>
 ![](https://leetcard.jacoblin.cool/Kavinraj-?theme=dark&font=Baloo%202&ext=heatmap)
 
