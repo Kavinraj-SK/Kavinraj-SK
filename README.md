@@ -1,7 +1,7 @@
 <div align="center">
 
 # Kavinraj S K
-### Full-Stack Developer · AI-powered Dev Tools · CS Undergrad @ PSG Tech
+### Full-Stack Developer · Aspiring Software Engineer · MCS.TCS @ PSG Tech
 
 [![GitHub](https://img.shields.io/badge/GitHub-Kavinraj--SK-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Kavinraj-SK)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-Kavinraj-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kavinraj-325464298/)
