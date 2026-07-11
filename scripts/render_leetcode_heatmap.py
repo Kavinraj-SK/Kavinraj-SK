@@ -1,23 +1,26 @@
 #!/usr/bin/env python3
 """
-Render data/contributions.json (produced by fetch_contributions.py) as a proper
-GitHub-style contribution heatmap SVG: a grid of rounded, colored BOXES in the
-classic 53-week x 7-day calendar, revealed once with a diagonal line-after-line
-slide-down (CSS keyframes, plays on load then freezes -- no looping "glow"), a
-Less->More legend, and a real stats footer.
+Render data/leetcode.json (produced by fetch_leetcode.py) as a GitHub-style
+heatmap grid -- but of LeetCode submission activity instead of git commits --
+with a Less->More legend and a real stats footer (solved counts by
+difficulty, streak, active days).
 
-Run by .github/workflows/update-profile-art.yml after fetch_contributions.py.
+Same one-shot diagonal reveal as the original contribution heatmap; single
+accent hue (LeetCode orange) instead of green, per the "monochrome, no
+rainbow" house style.
+
+Run by .github/workflows/update-profile-art.yml after fetch_leetcode.py.
 """
 import datetime
 import json
 import os
 
 HERE = os.path.dirname(__file__)
-IN_PATH = os.path.join(HERE, "..", "data", "contributions.json")
-OUT_PATH = os.path.join(HERE, "..", "contrib-heatmap.svg")
+IN_PATH = os.path.join(HERE, "..", "data", "leetcode.json")
+OUT_PATH = os.path.join(HERE, "..", "leetcode-heatmap.svg")
 
-# GitHub-ish green ramp: empty -> brightest. Level 5 is a brighter neon top end.
-PALETTE = ["#161b22", "#0e4429", "#006d32", "#26a641", "#39d353", "#69f0a0"]
+# LeetCode-orange ramp: empty -> brightest.
+PALETTE = ["#161b22", "#4d2e0a", "#8a4b0f", "#c96f16", "#ffa116", "#ffc966"]
 
 CELL = 12
 GAP = 3
@@ -29,31 +32,51 @@ TITLEBAR_H = 30
 
 BG = "#0a0e14"
 BG2 = "#0d1420"
-FRAME = "#1f6feb"
+FRAME = "#c96f16"
 MUTED = "#7d8590"
 TEXT = "#e6edf3"
-ACCENT = "#22d3ee"
-GREEN = "#39d353"
+ACCENT = "#ffa116"
+ORANGE = "#ffa116"
 GOLD = "#f2cc60"
 
 # reveal timing (one-shot)
-COL_T = 0.018   # per-column delay contribution (left -> right sweep)
-ROW_T = 0.045   # per-row delay contribution (top -> bottom cascade)
+COL_T = 0.018
+ROW_T = 0.045
 CELL_DUR = 0.42
+
+WINDOW_DAYS = 365
 
 
 def level_for(count):
     if count == 0:
         return 0
-    if count <= 5:
+    if count <= 1:
         return 1
-    if count <= 15:
+    if count <= 3:
         return 2
-    if count <= 30:
+    if count <= 6:
         return 3
-    if count <= 50:
+    if count <= 10:
         return 4
     return 5
+
+
+def fill_window(days):
+    """Turn the sparse {date: count} submission calendar into a dense,
+    continuous run of the last WINDOW_DAYS days (missing days = 0)."""
+    by_date = {d["date"]: d["count"] for d in days}
+    if by_date:
+        end = datetime.date.fromisoformat(max(by_date.keys()))
+    else:
+        end = datetime.date.today()
+    start = end - datetime.timedelta(days=WINDOW_DAYS - 1)
+    out = []
+    cur = start
+    while cur <= end:
+        key = cur.isoformat()
+        out.append({"date": key, "count": by_date.get(key, 0)})
+        cur += datetime.timedelta(days=1)
+    return out
 
 
 def build_grid(days):
@@ -78,7 +101,7 @@ def build_grid(days):
 
 
 def render(data):
-    days = data["days"]
+    days = fill_window(data["days"])
     grid = build_grid(days)
     n_cols = len(grid)
     art_w = n_cols * STEP
@@ -125,7 +148,7 @@ def render(data):
     for i, dotcol in enumerate(["#ff5f56", "#ffbd2e", "#27c93f"]):
         parts.append(f'<circle cx="{PAD + i*16}" cy="{TITLEBAR_H/2}" r="5" fill="{dotcol}"/>')
     parts.append(f'<text x="{canvas_w/2}" y="{TITLEBAR_H/2 + 4}" fill="{MUTED}" font-size="12" '
-                 f'text-anchor="middle">avi@github: ~/contributions --graph</text>')
+                 f'text-anchor="middle">kavinraj@github: ~/leetcode --graph</text>')
 
     grid_top = TITLEBAR_H + TOP_LABEL_H
     grid_left = PAD + LEFT_LABEL_W
@@ -138,7 +161,6 @@ def render(data):
         y = grid_top + wi * STEP + CELL * 0.78
         parts.append(f'<text x="{PAD}" y="{y:.1f}" fill="{MUTED}" font-size="9">{wname}</text>')
 
-    # the boxes -- each a rounded rect, diagonal slide-down reveal (once, freeze)
     for ci, column in enumerate(grid):
         gx = grid_left + ci * STEP
         for ri, cell in enumerate(column):
@@ -151,10 +173,9 @@ def render(data):
             parts.append(
                 f'<rect class="c" x="{gx}" y="{gy}" width="{CELL}" height="{CELL}" rx="2.5" '
                 f'fill="{PALETTE[lvl]}" style="animation-delay:{delay:.3f}s">'
-                f'<title>{date_s}: {count} contribution{plural}</title></rect>'
+                f'<title>{date_s}: {count} submission{plural}</title></rect>'
             )
 
-    # legend: Less [][][][][] More (bottom-right of the grid)
     leg_y = grid_top + art_h + 6
     leg_x = canvas_w - PAD - (len(PALETTE) * (CELL - 1) + 70)
     parts.append(f'<text x="{leg_x}" y="{leg_y + CELL*0.8:.1f}" fill="{MUTED}" font-size="10" text-anchor="end">Less</text>')
@@ -167,26 +188,26 @@ def render(data):
     sep_y = leg_y + CELL + 14
     parts.append(f'<line x1="0" y1="{sep_y}" x2="{canvas_w}" y2="{sep_y}" stroke="{FRAME}" stroke-opacity="0.25"/>')
 
-    cs = data["current_streak"]["length"]
-    ls = data["longest_streak"]["length"]
-    total = data["total_contributions"]
-    best = data["best_day"]
-    rng = data["range"]
+    total = data["total_solved"]
+    easy, medium, hard = data["easy"], data["medium"], data["hard"]
+    streak = data["streak"]
+    active = data["total_active_days"]
+    rng_start, rng_end = days[0]["date"], days[-1]["date"]
 
     ly = sep_y + 24
-    # left column: big highlighted numbers; right column: context in muted
-    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{GREEN}">'
+    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{ORANGE}">'
                  f'<tspan font-weight="700">{total:,}</tspan>'
-                 f'<tspan fill="{MUTED}"> contributions in the last year</tspan></text>')
+                 f'<tspan fill="{MUTED}"> problems solved on LeetCode</tspan></text>')
     parts.append(f'<text x="{canvas_w - PAD}" y="{ly}" font-size="12" fill="{MUTED}" text-anchor="end">'
-                 f'{rng["start"]} &#8594; {rng["end"]}</text>')
+                 f'{rng_start} &#8594; {rng_end}</text>')
     ly += 24
-    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{MUTED}">current streak '
-                 f'<tspan fill="{ACCENT}" font-weight="700">{cs} days</tspan>'
-                 f'<tspan fill="{MUTED}">   &#183;   longest </tspan>'
-                 f'<tspan fill="{ACCENT}" font-weight="700">{ls} days</tspan></text>')
+    parts.append(f'<text x="{PAD}" y="{ly}" font-size="13" fill="{MUTED}">'
+                 f'<tspan fill="#3fb950" font-weight="700">{easy}</tspan> easy   '
+                 f'<tspan fill="{GOLD}" font-weight="700">{medium}</tspan> medium   '
+                 f'<tspan fill="#f85149" font-weight="700">{hard}</tspan> hard</text>')
     parts.append(f'<text x="{canvas_w - PAD}" y="{ly}" font-size="12" fill="{MUTED}" text-anchor="end">'
-                 f'best day <tspan fill="{GOLD}" font-weight="700">{best["count"]}</tspan> on {best["date"]}</text>')
+                 f'streak <tspan fill="{ACCENT}" font-weight="700">{streak}d</tspan>'
+                 f'   &#183;   active <tspan fill="{ACCENT}" font-weight="700">{active}d</tspan></text>')
 
     parts.append("</svg>")
     return "".join(parts)

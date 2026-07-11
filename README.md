@@ -3,8 +3,9 @@
 # Kavinraj S K
 ### Full-Stack Developer · AI-powered Dev Tools · CS Undergrad @ PSG Tech
 
-[![GitHub](https://img.shields.io/badge/GitHub-Kavinraj--SK-181717?style=flat&logo=github)](https://github.com/Kavinraj-SK)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Kavinraj-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kavinraj-325464298/)
+[![GitHub](https://img.shields.io/badge/GitHub-Kavinraj--SK-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Kavinraj-SK)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Kavinraj-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/kavinraj-325464298/)
+[![Instagram](https://img.shields.io/badge/Instagram-_.1Kavin1._-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://instagram.com/_.1kavin1._)
 
 </div>
 
@@ -19,6 +20,6 @@
 </tr>
 </table>
 
-<img src="contrib-heatmap.svg" width="100%" alt="Contribution heatmap" />
+<img src="leetcode-heatmap.svg" width="100%" alt="LeetCode activity heatmap" />
 
-<sub>Contribution graph refreshes daily via GitHub Actions.</sub>
+<sub>LeetCode stats refresh daily via GitHub Actions.</sub>

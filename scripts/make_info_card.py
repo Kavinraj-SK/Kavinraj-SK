@@ -47,9 +47,9 @@ HOST = "kavinraj"   # shown as  kavinraj@github  in the header
 
 ROWS = [
     ("host",),
-    ("kv", "Now", "Integrated M.Sc. CS, PSG Tech (3rd yr)"),
+    ("kv", "Now", "Integrated M.Sc. TCS, PSG Tech (4th yr)"),
     ("kv", "Prev", "Frontend Intern @ Leap Green Energy"),
-    ("kv", "Edu", "M.Sc. Theoretical CS, PSG Tech '28"),
+    ("kv", "Edu", "Integrated M.Sc. TCS, PSG Tech '28"),
     ("gap",),
     ("sec", "Stack"),
     ("kv", "Languages", "Python, C++, C, SQL, JS"),
