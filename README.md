@@ -19,8 +19,6 @@
 </tr>
 </table>
 
-<img src="leetcode-heatmap.svg" width="100%" alt="LeetCode activity heatmap" />
-<sub>LeetCode stats refresh daily via GitHub Actions.</sub>
 
 <br/>
 
